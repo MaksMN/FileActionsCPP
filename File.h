@@ -82,10 +82,15 @@ public:
     bool is_readable() const;
     // проверка открытого! файла на флаги записи
     bool is_writable() const;
+    // проверка существования файла
     bool fileExists() const;
+    // Проверка входит ли файл в группу текущего пользователя
     bool is_UserInFileGroup() const;
+    // Проверка является ли текущий пользователь владельцем
     bool is_UserFileOwner() const;
+    // Проверка имеет ли текущий пользователь права на чтение
     bool is_UserReadPerms() const;
+    // Проверка имеет ли текущий пользователь права на запись
     bool is_UserWritePerms() const;
 
     int error_number() const;

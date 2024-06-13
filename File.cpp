@@ -362,7 +362,6 @@ bool File::is_UserInFileGroup() const
     // Получение информации о файле
     if (stat(_fpath.c_str(), &fileStat) != 0)
     {
-        perror("stat");
         return false;
     }
 
@@ -370,7 +369,6 @@ bool File::is_UserInFileGroup() const
     struct passwd *pw = getpwuid(currentUserID);
     if (!pw)
     {
-        perror("getpwuid");
         return false;
     }
 
@@ -405,7 +403,6 @@ bool File::is_UserFileOwner() const
     // Получение информации о файле
     if (stat(_fpath.c_str(), &fileStat) != 0)
     {
-        perror("stat");
         return false;
     }
     // Получение UID текущего пользователя
@@ -413,6 +410,50 @@ bool File::is_UserFileOwner() const
 
     // Проверка, является ли текущий пользователь владельцем файла
     return (fileStat.st_uid == currentUserID);
+}
+
+bool File::is_UserReadPerms() const
+{
+    if (!fileExists())
+    {
+        return false;
+    }
+    struct stat fileStat;
+    if (stat(_fpath.c_str(), &fileStat) != 0)
+    {
+        return false;
+    }
+    if (is_UserFileOwner())
+    {
+        return fileStat.st_mode & S_IRUSR;
+    }
+    if (is_UserInFileGroup())
+    {
+        return fileStat.st_mode & S_IRGRP;
+    }
+    return fileStat.st_mode & S_IROTH;
+}
+
+bool File::is_UserWritePerms() const
+{
+    if (!fileExists())
+    {
+        return false;
+    }
+    struct stat fileStat;
+    if (stat(_fpath.c_str(), &fileStat) != 0)
+    {
+        return false;
+    }
+    if (is_UserFileOwner())
+    {
+        return fileStat.st_mode & S_IWUSR;
+    }
+    if (is_UserInFileGroup())
+    {
+        return fileStat.st_mode & S_IWGRP;
+    }
+    return fileStat.st_mode & S_IWOTH;
 }
 
 int File::error_number() const
