@@ -90,8 +90,9 @@ public:
 
     int error_number() const;
     std::string error_message() const;
-    void add_error(std::string prefix = std::string());
     void error_clear();
 
+private:
+    void add_error(std::string prefix = std::string());
     mode_t stringToModeT(const std::string &modeStr);
 };
