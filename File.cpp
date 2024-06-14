@@ -1,6 +1,6 @@
 #include "File.h"
 
-File::File(const std::string &file_path, mode_t file_perms) : _fpath(file_path), _perms(file_perms)
+File::File(const std::string& file_path, mode_t file_perms) : _fpath(file_path), _perms(file_perms)
 {
     setPerms(_perms);
 }
@@ -111,7 +111,7 @@ std::string File::fread_lock(size_t start, size_t length)
     return fread(start, length, LOCK_SH | LOCK_UN);
 }
 
-ssize_t File::fwrite(const std::string &data, size_t start, size_t length, int lock_flags)
+ssize_t File::fwrite(const std::string& data, size_t start, size_t length, int lock_flags)
 {
     // Если файл открыт без флагов для записи - переоткрываем с O_WRONLY и закрываем насовсем.
     // В этом случае снимаются все блокировки.
@@ -153,7 +153,7 @@ ssize_t File::fwrite(const std::string &data, size_t start, size_t length, int l
     {
         length = data.size();
     }
-    auto result = write(_fd, data.c_str(), data.size());
+    auto result = write(_fd, data.c_str(), length);
     if (result == -1)
     {
         add_error("fwrite()");
@@ -162,7 +162,7 @@ ssize_t File::fwrite(const std::string &data, size_t start, size_t length, int l
     return result == data.size();
 }
 
-ssize_t File::fwrite_lock(const std::string &data, size_t start, size_t length)
+ssize_t File::fwrite_lock(const std::string& data, size_t start, size_t length)
 {
     return fwrite(data, start, length, LOCK_EX | LOCK_UN);
 }
@@ -221,7 +221,7 @@ void File::setPerms(mode_t perms)
     _perms = perms;
 }
 
-void File::setPerms(const std::string &perms)
+void File::setPerms(const std::string& perms)
 {
     mode_t p = std::stoi(perms, nullptr, 8);
     setPerms(p);
@@ -366,7 +366,7 @@ bool File::is_UserInFileGroup() const
     }
 
     // Получение информации о пользователе
-    struct passwd *pw = getpwuid(currentUserID);
+    struct passwd* pw = getpwuid(currentUserID);
     if (!pw)
     {
         return false;
@@ -480,17 +480,17 @@ void File::error_clear()
     _error_message = std::string();
 }
 
-mode_t File::stringToModeT(const std::string &modeStr)
+mode_t File::stringToModeT(const std::string& modeStr)
 {
     try
     {
         return static_cast<mode_t>(std::stoi(modeStr, nullptr, 8));
     }
-    catch (const std::invalid_argument &e)
+    catch (const std::invalid_argument& e)
     {
         add_error("Invalid argument: " + std::string(e.what()));
     }
-    catch (const std::out_of_range &e)
+    catch (const std::out_of_range& e)
     {
         add_error("Out of range: " + std::string(e.what()));
     }
