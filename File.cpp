@@ -43,7 +43,7 @@ std::string File::fread(size_t start, size_t length, int lock_flags)
     // Если файл не открыт, то закроем его после выполнения операции.
     // Если файл открыт с флагами для чтения - оставляем его открытым.
     // Если у заранее открытого файла присутствуют флаги блокировки - разблокировать текущую блокировку и включить новую lock_flags.
-    // Если присутствует флаг LOCK_UN - убрать блокировку при завершении.
+    // Если присутствует флаг F_UNLOCK - убрать блокировку при завершении.
 
     bool reopen = !is_readable(); // если открыт не для чтения или не открыт
     if (reopen)
@@ -98,7 +98,7 @@ std::string File::fread(size_t start, size_t length, int lock_flags)
     }
 
     // снимаем блокировку если указано
-    if (lock_flags & LOCK_UN)
+    if (lock_flags & F_UNLOCK)
         unlock();
     if (reopen)
         fclose();
@@ -108,7 +108,7 @@ std::string File::fread(size_t start, size_t length, int lock_flags)
 
 std::string File::fread_lock(size_t start, size_t length)
 {
-    return fread(start, length, LOCK_SH | LOCK_UN);
+    return fread(start, length, LOCK_SH | F_UNLOCK);
 }
 
 ssize_t File::fwrite(const std::string& data, size_t start, size_t length, int lock_flags)
@@ -119,7 +119,7 @@ ssize_t File::fwrite(const std::string& data, size_t start, size_t length, int l
     // Если файл не открыт, то закроем его после выполнения операции.
     // Если файл открыт с флагами для записи - оставляем его открытым.
     // Если у заранее открытого файла присутствуют флаги блокировки - разблокировать текущую блокировку и включить новую lock_flags.
-    // Если присутствует флаг LOCK_UN - убрать блокировку при завершении.
+    // Если присутствует флаг F_UNLOCK - убрать блокировку при завершении.
     bool reopen = !is_writable(); // если открыт не для записи или не открыт
     if (reopen)
     {
@@ -164,7 +164,7 @@ ssize_t File::fwrite(const std::string& data, size_t start, size_t length, int l
 
 ssize_t File::fwrite_lock(const std::string& data, size_t start, size_t length)
 {
-    return fwrite(data, start, length, LOCK_EX | LOCK_UN);
+    return fwrite(data, start, length, LOCK_EX | F_UNLOCK);
 }
 
 void File::setGroup(gid_t group_id)

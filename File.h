@@ -9,6 +9,8 @@
 #include <cstring>
 #include <vector>
 
+#define F_UNLOCK 64
+
 class File
 {
 private:
@@ -23,7 +25,7 @@ private:
     std::string _error_message;
 
 public:
-    File(const std::string &file_path, mode_t file_perms = 0600);
+    File(const std::string& file_path, mode_t file_perms = 0600);
 
     /// @brief Открывает файл
     /// @param flags Флаги режима открытия
@@ -51,19 +53,19 @@ public:
     /// @param length Длина записываемых данных
     /// @param lock_flags Флаги блокировки. Допустимые LOCK_EX | LOCK_UN. Если ноль, то блокировки не будет. Ели включен флаг LOCK_UN, то после записи файл будет разблокирован.
     /// @return
-    ssize_t fwrite(const std::string &data, size_t start = 0, size_t length = 0, int lock_flags = 0);
+    ssize_t fwrite(const std::string& data, size_t start = 0, size_t length = 0, int lock_flags = 0);
     /// @brief Записывает данные в файл с блокировкой LOCK_EX | LOCK_UN
     /// @param data Данные для записи
     /// @param start Начальная позиция.
     /// @param length Длина записываемых данных
     /// @return
-    ssize_t fwrite_lock(const std::string &data, size_t start = 0, size_t length = 0);
+    ssize_t fwrite_lock(const std::string& data, size_t start = 0, size_t length = 0);
 
     // методы меняющие системные права доступа к файлу
     void setGroup(gid_t group_id);
     void setOwner(uid_t user_id);
     void setPerms(mode_t perms = 0600);
-    void setPerms(const std::string &perms = "0600");
+    void setPerms(const std::string& perms = "0600");
     void UserToReader(); // открыть текущему пользователю доступ для чтения
     void UserToWriter(); // открыть текущему пользователю доступ для записи
 
@@ -99,5 +101,5 @@ public:
 
 private:
     void add_error(std::string prefix = std::string());
-    mode_t stringToModeT(const std::string &modeStr);
+    mode_t stringToModeT(const std::string& modeStr);
 };
