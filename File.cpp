@@ -322,11 +322,6 @@ unsigned long long int File::fsize()
 
 }
 
-int File::fd()
-{
-    return _fd;
-}
-
 bool File::isLocked() const
 {
     return _locked;

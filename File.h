@@ -41,7 +41,6 @@ public:
     /// @brief Читает файл с блокировкой LOCK_SH
     /// @param start Начальная позиция в файле с котрой начнется чтение
     /// @param length Длина читаемых данных
-    /// @param unlock Снять блокировку после завершения операции
     /// @return Прочитанные данные
     std::string freadLock(size_t start = 0, size_t length = 0);
 
@@ -60,36 +59,55 @@ public:
     ssize_t fwriteLock(const std::string& data, size_t start = 0, size_t length = 0);
 
     /// @brief Блокирует файл с флагами, указанными в аргументах
-    /// @param flags 
-    /// @return 
     bool lock(int flags);
 
     /// @brief Блокирует файл с флагом LOCK_EX
-    /// @param lock_nb добавление флага LOCK_NB
-    /// @return 
     bool lock_ex();
 
     /// @brief Блокирует файл с флагом LOCK_SH    
-    /// @return 
     bool lock_sh();
 
     /// @brief Снимает все блокировки
     void unlock();
 
     // методы меняющие системные права доступа к файлу
+
+    /// @brief Задает группу файла
+    /// @param group_id 
     void setGroup(gid_t group_id);
+
+    /// @brief Задает владельца файла
+    /// @param user_id 
     void setOwner(uid_t user_id);
+
+    /// @brief Изменяет права доступа
+    /// @param perms 
     void setPerms(mode_t perms = 0600);
+
+    /// @brief Изменяет права доступа заданные строкой
+    /// @param perms 
     void setPerms(const std::string& perms = "0600");
-    void UserToReader(uid_t uid = 0); // открыть текущему пользователю доступ для чтения
+
+    /// @brief Дает право чтения указанному пользователю
+    /// @param uid Если равен нулю права будут установлены для пользователя процесса
+    void UserToReader(uid_t uid = 0);
+
+    /// @brief Дает право записи указанному пользователю
+    /// @param uid Если равен нулю права будут установлены для пользователя процесса
     void UserToWriter(uid_t uid = 0); // открыть текущему пользователю доступ для записи
 
+    /// @brief Размер файла
+    /// @return 
     unsigned long long int fsize();
 
-    int fd();
-
+    /// @brief Проверяет наложена ли любая блокировка
+    /// @return 
     bool isLocked() const;
+    /// @brief Проверяет эксклюзивную блокировку
+    /// @return 
     bool isLockedEX() const;
+    /// @brief Проверяет разделяемую блокировку
+    /// @return 
     bool isLocketSH() const;
 
     // проверка открытого! файла на флаги чтения
