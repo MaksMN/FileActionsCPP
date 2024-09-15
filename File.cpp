@@ -79,6 +79,28 @@ ssize_t File::fwriteLock(const std::string& data, size_t start, size_t length)
     return result;
 }
 
+ssize_t File::append(const std::string& data)
+{
+    auto start = fsize();
+    return fwrite(data, start);
+}
+
+ssize_t File::appendNew(const std::string& data)
+{
+    return append("\n" + data);
+}
+
+ssize_t File::appendLock(const std::string& data)
+{
+    auto start = fsize();
+    return fwriteLock(data, start);
+}
+
+ssize_t File::appendNewLock(const std::string& data)
+{
+    return appendNewLock("\n" + data);
+}
+
 bool File::lock(int flags)
 {
     // если такая же блокировка уже наложена то ничего не делаем

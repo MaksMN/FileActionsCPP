@@ -58,6 +58,26 @@ public:
     /// @return
     ssize_t fwriteLock(const std::string& data, size_t start = 0, size_t length = 0);
 
+    /// @brief Добавляет контент в конец файла
+    /// @param data 
+    /// @return 
+    ssize_t append(const std::string& data);
+
+    /// @brief Добавляет контент в новую строку
+    /// @param data 
+    /// @return 
+    ssize_t appendNew(const std::string& data);
+
+    /// @brief Добавляет контент с блокировкой файла
+    /// @param data 
+    /// @return 
+    ssize_t appendLock(const std::string& data);
+
+    /// @brief Добавляет в новую строку с блокировкой файла
+    /// @param data 
+    /// @return 
+    ssize_t appendNewLock(const std::string& data);
+
     /// @brief Блокирует файл с флагами, указанными в аргументах
     bool lock(int flags);
 
