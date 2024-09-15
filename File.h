@@ -25,41 +25,69 @@ private:
     std::string _error_message;
 
 public:
+    const enum mode {
+        r = O_RDONLY,
+        w = O_WRONLY,
+        rw = O_RDWR
+    };
     File(const std::string& file_path, mode_t file_perms = 0600);
 
     /// @brief Открывает файл
     /// @param flags Флаги режима открытия
-    /// @param file_perms Права доступа если файл имеет флаг O_CREAT
     /// @return Дескриптор файла
-    int fopen(int flags = O_RDWR | O_CREAT, mode_t file_perms = 0600);
+    int fopen(int flags);
+
+    int fopenR();
+
+    int fopenW();
+
+    int fopenRW();
+
     void fclose();
 
     /// @brief Читает файл.
     /// @param start Начальная позиция в файле с котрой начнется чтение
     /// @param length Длина читаемых данных
-    /// @param lock_flags Флаги блокировки. Допустимые LOCK_SH | LOCK_UN. Если ноль, то блокировки не будет. Ели включен флаг LOCK_UN, то после чтения файл будет разблокирован.
     /// @return Прочитанные данные
-    std::string fread(size_t start = 0, size_t length = 0, int lock_flags = 0);
+    std::string fread(size_t start = 0, size_t length = 0);
 
-    /// @brief Читает файл с блокировкой LOCK_SH | LOCK_UN
+    /// @brief Читает файл с блокировкой LOCK_SH
     /// @param start Начальная позиция в файле с котрой начнется чтение
     /// @param length Длина читаемых данных
+    /// @param unlock Снять блокировку после завершения операции
     /// @return Прочитанные данные
-    std::string fread_lock(size_t start = 0, size_t length = 0);
+    std::string freadLock(size_t start = 0, size_t length = 0);
 
     /// @brief Записывает данные в файл
     /// @param data Данные для записи
     /// @param start Начальная позиция.
     /// @param length Длина записываемых данных
-    /// @param lock_flags Флаги блокировки. Допустимые LOCK_EX | LOCK_UN. Если ноль, то блокировки не будет. Ели включен флаг LOCK_UN, то после записи файл будет разблокирован.
     /// @return
-    ssize_t fwrite(const std::string& data, size_t start = 0, size_t length = 0, int lock_flags = 0);
-    /// @brief Записывает данные в файл с блокировкой LOCK_EX | LOCK_UN
+    ssize_t fwrite(const std::string& data, size_t start = 0, size_t length = 0);
+
+    /// @brief Записывает данные в файл с блокировкой LOCK_EX
     /// @param data Данные для записи
     /// @param start Начальная позиция.
     /// @param length Длина записываемых данных
     /// @return
-    ssize_t fwrite_lock(const std::string& data, size_t start = 0, size_t length = 0);
+    ssize_t fwriteLock(const std::string& data, size_t start = 0, size_t length = 0);
+
+    /// @brief Блокирует файл с флагами, указанными в аргументах
+    /// @param flags 
+    /// @return 
+    bool lock(int flags);
+
+    /// @brief Блокирует файл с флагом LOCK_EX
+    /// @param lock_nb добавление флага LOCK_NB
+    /// @return 
+    bool lock_ex();
+
+    /// @brief Блокирует файл с флагом LOCK_SH    
+    /// @return 
+    bool lock_sh();
+
+    /// @brief Снимает все блокировки
+    void unlock();
 
     // методы меняющие системные права доступа к файлу
     void setGroup(gid_t group_id);
@@ -70,10 +98,7 @@ public:
     void UserToWriter(); // открыть текущему пользователю доступ для записи
 
     unsigned long long int fsize();
-    bool lock(int flags);
-    bool lock_ex(bool lock_nb = false);
-    bool lock_sh(bool lock_nb = false);
-    void unlock();
+
     int fd();
     bool is_opened() const;
     bool is_locked() const;
@@ -81,9 +106,9 @@ public:
     bool is_locket_sh() const;
 
     // проверка открытого! файла на флаги чтения
-    bool is_readable() const;
+    bool isReadable() const;
     // проверка открытого! файла на флаги записи
-    bool is_writable() const;
+    bool isWritable() const;
     // проверка существования файла
     bool fileExists() const;
     // Проверка входит ли файл в группу текущего пользователя
