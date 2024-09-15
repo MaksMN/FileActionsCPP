@@ -9,41 +9,28 @@
 #include <cstring>
 #include <vector>
 
+
 #define F_UNLOCK 64
 
 class File
 {
-private:
-    const std::string _fpath;
-    mode_t _perms;
-    int _fd = -1;
-    bool _opened = false;
-    int _opened_flags = 0;
-    bool _locked = false;
-    int _locked_flags = LOCK_UN;
-    int _errno = 0;
-    std::string _error_message;
-
 public:
-    const enum mode {
+    enum open_mode {
         r = O_RDONLY,
         w = O_WRONLY,
         rw = O_RDWR
     };
-    File(const std::string& file_path, mode_t file_perms = 0600);
+private:
+    const std::string _fpath;
+    const open_mode _open_mode;
+    mode_t _perms;
+    int _fd = -1;
+    bool _locked = false;
+    int _locked_flags = LOCK_UN;
 
-    /// @brief Открывает файл
-    /// @param flags Флаги режима открытия
-    /// @return Дескриптор файла
-    int fopen(int flags);
+public:
 
-    int fopenR();
-
-    int fopenW();
-
-    int fopenRW();
-
-    void fclose();
+    File(const std::string& file_path, open_mode open_mode = open_mode::r, mode_t file_perms = 0600);
 
     /// @brief Читает файл.
     /// @param start Начальная позиция в файле с котрой начнется чтение
@@ -94,16 +81,16 @@ public:
     void setOwner(uid_t user_id);
     void setPerms(mode_t perms = 0600);
     void setPerms(const std::string& perms = "0600");
-    void UserToReader(); // открыть текущему пользователю доступ для чтения
-    void UserToWriter(); // открыть текущему пользователю доступ для записи
+    void UserToReader(uid_t uid = 0); // открыть текущему пользователю доступ для чтения
+    void UserToWriter(uid_t uid = 0); // открыть текущему пользователю доступ для записи
 
     unsigned long long int fsize();
 
     int fd();
-    bool is_opened() const;
-    bool is_locked() const;
-    bool is_locked_ex() const;
-    bool is_locket_sh() const;
+
+    bool isLocked() const;
+    bool isLockedEX() const;
+    bool isLocketSH() const;
 
     // проверка открытого! файла на флаги чтения
     bool isReadable() const;
@@ -112,19 +99,15 @@ public:
     // проверка существования файла
     bool fileExists() const;
     // Проверка входит ли файл в группу текущего пользователя
-    bool is_UserInFileGroup() const;
+    bool isUserInFileGroup(uid_t uid = 0) const;
     // Проверка является ли текущий пользователь владельцем
-    bool is_UserFileOwner() const;
+    bool isUserFileOwner(uid_t uid = 0) const;
     // Проверка имеет ли текущий пользователь права на чтение
-    bool is_UserReadPerms() const;
+    bool isUserReadPerms(uid_t uid = 0) const;
     // Проверка имеет ли текущий пользователь права на запись
-    bool is_UserWritePerms() const;
-
-    int error_number() const;
-    std::string error_message() const;
-    void error_clear();
-
+    bool isUserWritePerms(uid_t uid = 0) const;
 private:
-    void add_error(std::string prefix = std::string());
+
+    std::string errorMessage() const;
     mode_t stringToModeT(const std::string& modeStr);
 };
